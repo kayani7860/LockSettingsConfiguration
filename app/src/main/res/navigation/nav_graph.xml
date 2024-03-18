@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/FirstFragment"
         android:name="com.test.locksettingsconfiguration.FirstFragment"
-        android:label="@string/first_fragment_label"
+        android:label="@string/parameters_fragment_label"
         tools:layout="@layout/fragment_first">
 
         <action
