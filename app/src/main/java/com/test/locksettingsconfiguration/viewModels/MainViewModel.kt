@@ -9,13 +9,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainViewModel(private val repository: ParameterRepository): ViewModel() {
-
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.getParameter()
+            repository.fetchLockParameters()
         }
     }
 
-    val parameters : LiveData<Map<String, LockParameters>>
+    val parameters : LiveData<LockParameters>
         get() = repository.parameter
 }

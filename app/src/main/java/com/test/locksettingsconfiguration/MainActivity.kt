@@ -2,14 +2,17 @@ package com.test.locksettingsconfiguration
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
-import com.test.locksettingsconfiguration.api.fetchLockParameters
+import com.test.locksettingsconfiguration.api.ParameterService
+import com.test.locksettingsconfiguration.api.RetrofitHelper
 import com.test.locksettingsconfiguration.databinding.ActivityMainBinding
+import com.test.locksettingsconfiguration.repository.ParameterRepository
 import com.test.locksettingsconfiguration.viewModels.MainViewModel
-import kotlinx.coroutines.runBlocking
+import com.test.locksettingsconfiguration.viewModels.MainViewModelFactory
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,7 +24,15 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val parameterService = RetrofitHelper.getInstance().create(ParameterService::class.java)
+        val repository = ParameterRepository(parameterService)
+        mainViewModel =
+            ViewModelProvider(this, MainViewModelFactory(repository))[MainViewModel::class.java]
 
+
+        mainViewModel.parameters.observe(this) {
+            println("hammad observe ${it?.name}")
+        }
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -30,13 +41,6 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
-
-
-     runBlocking {
-         fetchLockParameters().forEach {
-             println("hammad Param Name = ${it.name} values = ${it.values} range = ${it.range} default = ${it.default} common = ${it.common} unit = ${it.unit}")
-         }
-     }
 
     }
 
