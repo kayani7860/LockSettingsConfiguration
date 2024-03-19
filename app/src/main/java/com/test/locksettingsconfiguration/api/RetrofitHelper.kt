@@ -17,36 +17,41 @@ object RetrofitClient {
         return retrofit.create(ParameterService::class.java)
     }
 }
-suspend fun fetchLockParameters(): Map<String, LockParameters> {
+suspend fun fetchLockParameters(): MutableList<LockParameters> {
     val apiService = RetrofitClient.create()
 
     val lockParametersMap = apiService.getLockParameters()
-    val result = mutableMapOf<String, LockParameters>()
+    val result = mutableListOf<LockParameters>()
 
-    lockParametersMap?.forEach { (key, value) ->
-        val lockParameter = when (value) {
+    lockParametersMap?.forEach { (name, property) ->
+
+        val lockParameter = when (property) {
             is Map<*, *> -> {
-                val values = (value["values"] as? List<*>)?.mapNotNull { it as? String }
-                val range = (value["range"] as? Map<*, *>)?.let { rangeMap ->
+                val values = (property["values"] as? List<*>)?.mapNotNull { it as? String }
+                val range = (property["range"] as? Map<*, *>)?.let { rangeMap ->
                     Range(
                         min = rangeMap["min"] as? Double?,
                         max = rangeMap["max"] as? Double?
                     )
                 }
+                println("hammad parsing $name range = ${property["range"]}")
                 LockParameters(
+                    name = name,
                     values = values,
-                    default = value["default"] as? String?,
+                    default = property["default"].toString(),
                     range = range,
-                    unit = value["unit"] as? String?,
-                    common = value["common"] as? Boolean?
+                    unit = property["unit"] as? String?,
+                    common = property["common"] as? Boolean?
                 )
             }
             else -> {
-                LockParameters(default = value.toString())
+                LockParameters(default = property.toString())
             }
         }
-        if (key!= null)
-        result[key] = lockParameter
+        if (name!= null){
+            result.add(lockParameter)
+        }
+
     }
     return result
 }

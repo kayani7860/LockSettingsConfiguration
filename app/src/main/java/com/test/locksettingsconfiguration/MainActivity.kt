@@ -33,8 +33,9 @@ class MainActivity : AppCompatActivity() {
 
 
      runBlocking {
-         println("hammad ${fetchLockParameters()}")
-
+         fetchLockParameters().forEach {
+             println("hammad Param Name = ${it.name} values = ${it.values} range = ${it.range} default = ${it.default} common = ${it.common} unit = ${it.unit}")
+         }
      }
 
     }

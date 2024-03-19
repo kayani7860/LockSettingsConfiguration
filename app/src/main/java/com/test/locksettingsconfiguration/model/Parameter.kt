@@ -1,6 +1,7 @@
 package com.test.locksettingsconfiguration.model
 
 data class LockParameters(
+    val name:String? = null,
     val values: List<String>? = null,
     val default: String? = null,
     val range: Range? = null,
