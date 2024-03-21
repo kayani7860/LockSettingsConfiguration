@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.test.locksettingsconfiguration.model.Parameter1
 
 //@Database(entities = [Parameter1::class], version = 1)
 abstract class ParameterDatabase : RoomDatabase() {

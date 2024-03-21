@@ -3,46 +3,45 @@ package com.test.locksettingsconfiguration.repository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.test.locksettingsconfiguration.api.ParameterService
-import com.test.locksettingsconfiguration.model.LockParameters
-import com.test.locksettingsconfiguration.model.Range
+import com.test.locksettingsconfiguration.isNetworkAvailable
+import com.test.locksettingsconfiguration.model.LockConfig
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.get
+import io.ktor.serialization.kotlinx.json.json
+import io.ktor.utils.io.errors.IOException
+import kotlinx.serialization.json.Json
 
-class ParameterRepository(private val parameterService: ParameterService) {
-    private val parameterLiveData = MutableLiveData<LockParameters>()
-    val parameter: LiveData<LockParameters>
+class ParameterRepository : ParameterService {
+
+    val API_URL = "https://run.mocky.io/v3/d5f5d613-474b-49c4-a7b0-7730e8f8f486"
+    private val parameterLiveData = MutableLiveData<LockConfig?>()
+    val parameter: LiveData<LockConfig?>
         get() = parameterLiveData
 
-    suspend fun fetchLockParameters() {
-        val lockParametersMap = parameterService.getLockParameters()
-        lockParametersMap?.forEach { (name, property) ->
+    override suspend fun getLockParameters(): LockConfig? {
+        if (!isNetworkAvailable) return null
 
-            val lockParameter = when (property) {
-                is Map<*, *> -> {
-                    val values = (property["values"] as? List<*>)?.mapNotNull { it as? String }
-                    val range = (property["range"] as? Map<*, *>)?.let { rangeMap ->
-                        Range(
-                            min = rangeMap["min"] as? Double?,
-                            max = rangeMap["max"] as? Double?
-                        )
-                    }
-                    println("hammad parsing $name range = ${property["range"]}")
-                    LockParameters(
-                        name = name,
-                        values = values,
-                        default = property["default"].toString(),
-                        range = range,
-                        unit = property["unit"] as? String?,
-                        common = property["common"] as? Boolean?
-                    )
-                }
-
-                else -> {
-                    LockParameters(default = property.toString())
-                }
-            }
-            if (name != null) {
-                parameterLiveData.postValue(lockParameter)
+        val client = HttpClient {
+            install(ContentNegotiation) {
+                json(Json {
+                    prettyPrint = true
+                    isLenient = true
+                    ignoreUnknownKeys = true
+                })
             }
         }
-    }
-}
+        return try {
+            val response = client
+                .get(API_URL)
+            parameterLiveData.postValue(response.body<LockConfig>())
+            response.body<LockConfig?>()
 
+        } catch (error: Exception) {
+            println("hammad ERROR ${error.message}")
+            throw IOException(error.message ?: "hammad Unknown Error")
+        }
+    }
+
+}

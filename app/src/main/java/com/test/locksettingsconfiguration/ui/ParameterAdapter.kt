@@ -1,4 +1,4 @@
-package com.test.locksettingsconfiguration
+package com.test.locksettingsconfiguration.ui
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -8,7 +8,7 @@ import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.navigation.findNavController
-
+import com.test.locksettingsconfiguration.R
 
 data class DataModel(
     val parameterName: String,
