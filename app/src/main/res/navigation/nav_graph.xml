@@ -16,7 +16,7 @@
             app:destination="@id/SecondFragment">
             <argument
                 android:name="parameterModel"
-                app:argType="com.test.locksettingsconfiguration.model.ParameterModel" />
+                app:argType="com.test.locksettingsconfiguration.model.Parameter" />
         </action>
 
     </fragment>

@@ -3,7 +3,7 @@ package com.test.locksettingsconfiguration.viewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.test.locksettingsconfiguration.model.ParameterModel
+import com.test.locksettingsconfiguration.model.Parameter
 import com.test.locksettingsconfiguration.repository.ParameterRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -16,6 +16,6 @@ class ParameterViewModel : ViewModel() {
         }
     }
 
-    val parameters : LiveData<List<ParameterModel>>
+    val parameters : LiveData<List<Parameter>>
         get() = repository.parameter
 }

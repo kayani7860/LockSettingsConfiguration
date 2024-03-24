@@ -10,22 +10,22 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.test.locksettingsconfiguration.R
-import com.test.locksettingsconfiguration.model.ParameterModel
+import com.test.locksettingsconfiguration.model.Parameter
 
 class ParameterAdapter(
     private val context: Context,
-    private val callback: (ParameterModel) -> Unit
+    private val callback: (Parameter) -> Unit
 ) :
-    ListAdapter<ParameterModel, ParameterAdapter.ViewHolder>(DataModelDiffCallback()) {
+    ListAdapter<Parameter, ParameterAdapter.ViewHolder>(DataModelDiffCallback()) {
 
-    var originalList: List<ParameterModel> = ArrayList()
+    var originalList: List<Parameter> = ArrayList()
 
     init {
         originalList = ArrayList()
     }
 
     fun filter(query: String?) {
-        val filteredList = ArrayList<ParameterModel>()
+        val filteredList = ArrayList<Parameter>()
         if (!query.isNullOrEmpty()) {
             for (item in originalList) {
                 if (item.parameterName?.contains(query, ignoreCase = true) == true) {
@@ -61,12 +61,12 @@ class ParameterAdapter(
         var parameterItem: LinearLayout = itemView.findViewById(R.id.parameter_item_view)
     }
 
-    class DataModelDiffCallback : DiffUtil.ItemCallback<ParameterModel>() {
-        override fun areItemsTheSame(oldItem: ParameterModel, newItem: ParameterModel): Boolean {
+    class DataModelDiffCallback : DiffUtil.ItemCallback<Parameter>() {
+        override fun areItemsTheSame(oldItem: Parameter, newItem: Parameter): Boolean {
             return oldItem.parameterName == newItem.parameterName
         }
 
-        override fun areContentsTheSame(oldItem: ParameterModel, newItem: ParameterModel): Boolean {
+        override fun areContentsTheSame(oldItem: Parameter, newItem: Parameter): Boolean {
             return oldItem == newItem
         }
     }

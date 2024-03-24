@@ -11,7 +11,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import com.test.locksettingsconfiguration.R
 import com.test.locksettingsconfiguration.databinding.FragmentSecondBinding
-import com.test.locksettingsconfiguration.model.ParameterModel
+import com.test.locksettingsconfiguration.model.Parameter
 
 class EditFragment : Fragment() {
 
@@ -34,7 +34,7 @@ class EditFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun setupUI() {
-        val parameter = this.arguments?.getParcelable("parameterModel", ParameterModel::class.java)
+        val parameter = this.arguments?.getParcelable("parameterModel", Parameter::class.java)
 
         binding.title.text = parameter?.parameterName
         binding.tvPrimaryDefault.text =
@@ -47,7 +47,7 @@ class EditFragment : Fragment() {
     }
 
     private fun createRadioButtons(
-        parameter: ParameterModel?, radioGroup: RadioGroup
+        parameter: Parameter?, radioGroup: RadioGroup
     ) {
         parameter?.dataModel?.values?.forEach { option ->
             val radioButton = RadioButton(requireContext())

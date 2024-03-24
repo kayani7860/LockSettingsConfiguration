@@ -46,7 +46,7 @@ class ParameterFragment : Fragment() {
         listView.adapter = parameterAdapter
         mainViewModel.parameters.observe(viewLifecycleOwner) { parameterList ->
 
-            if (parameterList.isNullOrEmpty()) {
+            if (!parameterList.isNullOrEmpty()) {
                 binding.loadingProgressBar.visibility = View.GONE
                 binding.clMain.visibility = View.VISIBLE
                 parameterAdapter.originalList = parameterList

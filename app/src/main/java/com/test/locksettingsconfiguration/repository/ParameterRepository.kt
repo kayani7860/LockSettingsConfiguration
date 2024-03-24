@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.test.locksettingsconfiguration.api.ParameterService
 import com.test.locksettingsconfiguration.isNetworkAvailable
 import com.test.locksettingsconfiguration.model.LockConfig
-import com.test.locksettingsconfiguration.model.ParameterModel
+import com.test.locksettingsconfiguration.model.Parameter
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -17,8 +17,8 @@ import kotlinx.serialization.json.Json
 class ParameterRepository : ParameterService {
 
     val API_URL = "https://run.mocky.io/v3/d5f5d613-474b-49c4-a7b0-7730e8f8f486"
-    private val parameterLiveData = MutableLiveData<List<ParameterModel>>()
-    val parameter: LiveData<List<ParameterModel>>
+    private val parameterLiveData = MutableLiveData<List<Parameter>>()
+    val parameter: LiveData<List<Parameter>>
         get() = parameterLiveData
 
     override suspend fun getLockParameters() {
@@ -36,10 +36,10 @@ class ParameterRepository : ParameterService {
                     .get(API_URL).body<LockConfig>()
 
                 val dataList = listOf(
-                    ParameterModel("Lock Voltage", response.lockVoltage),
-                    ParameterModel("Lock Kick", response.lockKick),
-                    ParameterModel("Lock Type", response.lockType),
-                    ParameterModel("Lock Release", response.lockRelease)
+                    Parameter("Lock Voltage", response.lockVoltage),
+                    Parameter("Lock Kick", response.lockKick),
+                    Parameter("Lock Type", response.lockType),
+                    Parameter("Lock Release", response.lockRelease)
                 )
                 parameterLiveData.postValue(dataList)
 
