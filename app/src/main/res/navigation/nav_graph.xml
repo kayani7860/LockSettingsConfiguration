@@ -9,15 +9,20 @@
         android:id="@+id/FirstFragment"
         android:name="com.test.locksettingsconfiguration.ui.ParameterFragment"
         android:label="@string/parameters_fragment_label"
-        tools:layout="@layout/fragment_first">
+        tools:layout="@layout/fragment_parameter">
 
         <action
             android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            app:destination="@id/SecondFragment">
+            <argument
+                android:name="parameterModel"
+                app:argType="com.test.locksettingsconfiguration.model.ParameterModel" />
+        </action>
+
     </fragment>
     <fragment
         android:id="@+id/SecondFragment"
-        android:name="com.test.locksettingsconfiguration.ui.SecondFragment"
+        android:name="com.test.locksettingsconfiguration.ui.EditFragment"
         android:label="@string/second_fragment_label"
         tools:layout="@layout/fragment_second">
 

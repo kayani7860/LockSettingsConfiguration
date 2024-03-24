@@ -1,7 +1,8 @@
 package com.test.locksettingsconfiguration.model
 
+import android.os.Parcel
+import android.os.Parcelable
 import kotlinx.serialization.Serializable
-import com.google.gson.Gson
 
 @Serializable
 data class Range(
@@ -12,61 +13,70 @@ data class Range(
 @Serializable
 data class LockConfig(
     val lockVoltage: LockVoltageConfig,
-    val lockType: LockTypeConfig,
-    val lockKick: LockKickConfig,
-    val lockRelease: LockReleaseConfig,
-    val lockReleaseTime: LockReleaseTimeConfig,
-    val lockAngle: LockAngleConfig
-){
-    fun toJson(): String {
-        return Gson().toJson(this)
-    }
-
-    companion object {
-        fun fromJson(json: String): LockConfig {
-            return Gson().fromJson(json, LockConfig::class.java)
-        }
-    }
-}
+    val lockType: LockVoltageConfig,
+    val lockKick: LockVoltageConfig,
+    val lockRelease: LockVoltageConfig
+)
 
 @Serializable
 data class LockVoltageConfig(
     val values: List<String>,
-    val default: String
-)
-
-@Serializable
-data class LockTypeConfig(
-    val values: List<String>,
-    val default: String
-)
-
-@Serializable
-data class LockKickConfig(
-    val values: List<String>,
-    val default: String
-)
-
-@Serializable
-data class LockReleaseConfig(
-    val values: List<String>,
     val default: String,
     val common: Boolean = false
-)
+): Parcelable {
+    constructor(parcel: Parcel) : this(
+        parcel.createStringArrayList() ?: listOf(),
+        parcel.readString() ?: "",
+        parcel.readByte() != 0.toByte()
+    )
 
-@Serializable
-data class LockReleaseTimeConfig(
-    val range: Range,
-    val unit: String,
-    val default: Double
-)
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeStringList(values)
+        parcel.writeString(default)
+        parcel.writeByte(if (common) 1 else 0)
+    }
 
-@Serializable
-data class LockAngleConfig(
-    val range: Range,
-    val unit: String,
-    val default: Int,
-    val common: Boolean = false
-)
+    override fun describeContents(): Int {
+        return 0
+    }
 
+    companion object CREATOR : Parcelable.Creator<LockVoltageConfig> {
+        override fun createFromParcel(parcel: Parcel): LockVoltageConfig {
+            return LockVoltageConfig(parcel)
+        }
+
+        override fun newArray(size: Int): Array<LockVoltageConfig?> {
+            return arrayOfNulls(size)
+        }
+    }
+}
+
+data class ParameterModel(
+    val parameterName: String?,
+    val dataModel: LockVoltageConfig,
+): Parcelable {
+    constructor(parcel: Parcel) : this(
+        parcel.readString(),
+        parcel.readParcelable<LockVoltageConfig>(LockVoltageConfig::class.java.classLoader)!!
+    )
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(parameterName)
+        parcel.writeParcelable(dataModel, flags)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<ParameterModel> {
+        override fun createFromParcel(parcel: Parcel): ParameterModel {
+            return ParameterModel(parcel)
+        }
+
+        override fun newArray(size: Int): Array<ParameterModel?> {
+            return arrayOfNulls(size)
+        }
+    }
+}
 

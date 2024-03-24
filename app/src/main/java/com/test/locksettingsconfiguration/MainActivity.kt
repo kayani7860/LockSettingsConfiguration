@@ -10,35 +10,22 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
-import com.test.locksettingsconfiguration.database.LockConfigManager
 import com.test.locksettingsconfiguration.databinding.ActivityMainBinding
-import com.test.locksettingsconfiguration.viewModels.MainViewModel
 
-var isNetworkAvailable = false
+var isNetworkAvailable = true
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
 
-    lateinit var mainViewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
-
-        mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
-
-        mainViewModel.parameters.observe(this) {
-            println("hammad observe ${it}")
-            if (it != null) {
-                LockConfigManager.saveLockConfig(this, it)
-            }
-        }
-
         isNetworkAvailable = isNetworkAvailable(this)
-
+        
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)

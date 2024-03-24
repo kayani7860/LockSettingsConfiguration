@@ -4,80 +4,71 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.navigation.findNavController
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.test.locksettingsconfiguration.R
+import com.test.locksettingsconfiguration.model.ParameterModel
 
-data class DataModel(
-    val parameterName: String,
-    val primaryValue: String,
-    val secondaryValue: String
-)
+class ParameterAdapter(
+    private val context: Context,
+    private val callback: (ParameterModel) -> Unit
+) :
+    ListAdapter<ParameterModel, ParameterAdapter.ViewHolder>(DataModelDiffCallback()) {
 
-class ParameterAdapter(context: Context, private var dataList: List<DataModel>) :
-    ArrayAdapter<DataModel>(context, R.layout.parameter_item, dataList) {
+    var originalList: List<ParameterModel> = ArrayList()
 
-    private var filteredDataList: List<DataModel> = dataList
-
-    override fun getView(position: Int, view: View?, parent: ViewGroup): View {
-        var convertView = view
-        val viewHolder: ViewHolder
-
-        if (convertView == null) {
-            convertView =
-                LayoutInflater.from(context).inflate(R.layout.parameter_item, parent, false)
-            viewHolder = ViewHolder()
-            viewHolder.parameterName = convertView.findViewById(R.id.tv_parameter_name)
-            viewHolder.primaryValue = convertView.findViewById(R.id.tv_primary_value)
-            viewHolder.secondaryValue = convertView.findViewById(R.id.tv_secondary_value)
-            viewHolder.parameterItem = convertView.findViewById(R.id.parameter_item_view)
-
-            convertView.tag = viewHolder
-        } else {
-            viewHolder = convertView.tag as ViewHolder
-        }
-
-
-        val currentItem = filteredDataList[position]
-        viewHolder.parameterName?.text = currentItem.parameterName
-        viewHolder.primaryValue?.text = currentItem.primaryValue
-        viewHolder.secondaryValue?.text = currentItem.secondaryValue
-
-
-        viewHolder.parameterItem?.setOnClickListener {
-            view?.findNavController()?.navigate(R.id.action_FirstFragment_to_SecondFragment)
-        }
-        return convertView!!
+    init {
+        originalList = ArrayList()
     }
 
-    override fun getCount(): Int {
-        return filteredDataList.size
-    }
-
-    override fun getItem(position: Int): DataModel {
-        return filteredDataList[position]
-    }
-
-    fun filter(query: String) {
-        filteredDataList = if (query.isEmpty()) {
-            dataList
-        } else {
-            dataList.filter {
-                it.parameterName.contains(query, true) ||
-                        it.primaryValue.contains(query, true) ||
-                        it.secondaryValue.contains(query, true)
+    fun filter(query: String?) {
+        val filteredList = ArrayList<ParameterModel>()
+        if (!query.isNullOrEmpty()) {
+            for (item in originalList) {
+                if (item.parameterName?.contains(query, ignoreCase = true) == true) {
+                    filteredList.add(item)
+                }
             }
+            submitList(filteredList)
+        } else {
+            submitList(originalList)
         }
-        notifyDataSetChanged()
     }
 
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = LayoutInflater.from(context).inflate(R.layout.parameter_item, parent, false)
+        return ViewHolder(view)
+    }
 
-    private class ViewHolder {
-        var parameterName: TextView? = null
-        var primaryValue: TextView? = null
-        var secondaryValue: TextView? = null
-        var parameterItem: LinearLayout? = null
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val item = getItem(position)
+        holder.parameterName.text = item.parameterName
+        holder.primaryValue.text = item.dataModel.default
+        holder.secondaryValue.text = item.dataModel.default
+        holder.parameterItem.setOnClickListener {
+            callback.invoke(item)
+        }
+
+    }
+
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val parameterName: TextView = itemView.findViewById(R.id.tv_parameter_name)
+        var primaryValue: TextView = itemView.findViewById(R.id.tv_primary_value)
+        var secondaryValue: TextView = itemView.findViewById(R.id.tv_secondary_value)
+        var parameterItem: LinearLayout = itemView.findViewById(R.id.parameter_item_view)
+    }
+
+    class DataModelDiffCallback : DiffUtil.ItemCallback<ParameterModel>() {
+        override fun areItemsTheSame(oldItem: ParameterModel, newItem: ParameterModel): Boolean {
+            return oldItem.parameterName == newItem.parameterName
+        }
+
+        override fun areContentsTheSame(oldItem: ParameterModel, newItem: ParameterModel): Boolean {
+            return oldItem == newItem
+        }
     }
 }
+

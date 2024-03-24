@@ -6,54 +6,67 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.test.locksettingsconfiguration.R
-import com.test.locksettingsconfiguration.database.LockConfigManager
-import com.test.locksettingsconfiguration.databinding.FragmentFirstBinding
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.test.locksettingsconfiguration.databinding.FragmentParameterBinding
+import com.test.locksettingsconfiguration.viewModels.ParameterViewModel
 
 class ParameterFragment : Fragment() {
 
-    private var _binding: FragmentFirstBinding? = null
+    private var _binding: FragmentParameterBinding? = null
     private val binding get() = _binding!!
+    private lateinit var mainViewModel: ParameterViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentFirstBinding.inflate(inflater, container, false)
+        _binding = FragmentParameterBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        mainViewModel = ViewModelProvider(this)[ParameterViewModel::class.java]
 
-        val dataList = listOf(
-            DataModel("1", "true", "false"),
-            DataModel("2", "faisalabad", "faisalabad"),
-            DataModel("3", "malmo", "malmo"),
-        )
+        val parameterAdapter = setupAdapter()
+        setupSearch(parameterAdapter)
+    }
 
+    private fun setupAdapter(): ParameterAdapter {
         val listView = binding.listView
-        val customAdapter = ParameterAdapter(requireContext(), dataList)
-        listView.adapter = customAdapter
-        val retrievedLockConfig = LockConfigManager.getLockConfig(requireContext())
+        listView.layoutManager = LinearLayoutManager(requireContext())
 
-        println("hammad retrievedLockConfig = $retrievedLockConfig")
+        val parameterAdapter = ParameterAdapter(requireContext()) { model ->
+            val action = ParameterFragmentDirections.actionFirstFragmentToSecondFragment(model)
+            findNavController().navigate(action)
+        }
+
+        listView.adapter = parameterAdapter
+        mainViewModel.parameters.observe(viewLifecycleOwner) { parameterList ->
+
+            if (parameterList.isNullOrEmpty()) {
+                binding.loadingProgressBar.visibility = View.GONE
+                binding.clMain.visibility = View.VISIBLE
+                parameterAdapter.originalList = parameterList
+                parameterAdapter.submitList(parameterList)
+            }
+        }
+        return parameterAdapter
+    }
+
+    private fun setupSearch(parameterAdapter: ParameterAdapter) {
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                customAdapter.filter(newText.orEmpty())
+                parameterAdapter.filter(newText)
                 return true
             }
         })
-
-
-        binding.buttonFirst.setOnClickListener {
-            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
-        }
     }
 
     override fun onDestroyView() {

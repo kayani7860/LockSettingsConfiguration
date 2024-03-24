@@ -10,7 +10,7 @@ abstract class ParameterDatabase : RoomDatabase() {
 
     abstract fun parameterDao(): ParameterDao
 
-    companion object {
+   /* companion object {
         @Volatile
         private var INSTANCE: ParameterDatabase? = null
         fun getDataBase(context: Context): ParameterDatabase {
@@ -25,5 +25,5 @@ abstract class ParameterDatabase : RoomDatabase() {
             }
             return INSTANCE!!
         }
-    }
+    }*/
 }
