@@ -12,7 +12,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <LinearLayout
         android:id="@+id/ll_primary"
@@ -33,14 +34,14 @@
         <TextView
             android:id="@+id/tv_primary_default"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            tools:text="@string/defaultValue" />
+
         <RadioGroup
             android:id="@+id/radio_group_primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-        </RadioGroup>
-
+            android:orientation="vertical"/>
     </LinearLayout>
 
     <LinearLayout
@@ -63,7 +64,8 @@
         <TextView
             android:id="@+id/tv_secondary_default"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            tools:text="@string/defaultValue" />
 
         <RadioGroup
             android:id="@+id/radio_group_secondary"
@@ -95,8 +97,5 @@
             android:layout_weight="1"
             android:backgroundTint="@color/black"
             android:text="@string/save" />
-
     </LinearLayout>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

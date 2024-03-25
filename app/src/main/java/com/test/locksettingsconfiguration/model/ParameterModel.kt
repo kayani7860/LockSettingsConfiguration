@@ -6,9 +6,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ParameterModel(
-    val values: List<String>,
-    val default: String,
-    val common: Boolean = false
+    var values: List<String>,
+    var default: String,
+    var common: Boolean = false
 ): Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.createStringArrayList() ?: listOf(),

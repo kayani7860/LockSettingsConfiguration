@@ -5,9 +5,13 @@ import android.os.Parcelable
 
 data class Parameter(
     val parameterName: String?,
+    var primaryValue: String?,
+    var secondaryValue: String?,
     val dataModel: ParameterModel,
 ): Parcelable {
     constructor(parcel: Parcel) : this(
+        parcel.readString(),
+        parcel.readString(),
         parcel.readString(),
         parcel.readParcelable<ParameterModel>(ParameterModel::class.java.classLoader)!!
     )

@@ -16,7 +16,7 @@ import kotlinx.serialization.json.Json
 
 class ParameterRepository : ParameterService {
 
-    val API_URL = "https://run.mocky.io/v3/d5f5d613-474b-49c4-a7b0-7730e8f8f486"
+    private val url = "https://run.mocky.io/v3/d5f5d613-474b-49c4-a7b0-7730e8f8f486"
     private val parameterLiveData = MutableLiveData<List<Parameter>>()
     val parameter: LiveData<List<Parameter>>
         get() = parameterLiveData
@@ -33,13 +33,33 @@ class ParameterRepository : ParameterService {
                 }
 
                 val response = client
-                    .get(API_URL).body<LockConfig>()
+                    .get(url).body<LockConfig>()
 
                 val dataList = listOf(
-                    Parameter("Lock Voltage", response.lockVoltage),
-                    Parameter("Lock Kick", response.lockKick),
-                    Parameter("Lock Type", response.lockType),
-                    Parameter("Lock Release", response.lockRelease)
+                    Parameter(
+                        "Lock Voltage",
+                        response.lockVoltage.default,
+                        response.lockVoltage.default,
+                        response.lockVoltage
+                    ),
+                    Parameter(
+                        "Lock Kick",
+                        response.lockKick.default,
+                        response.lockKick.default,
+                        response.lockKick
+                    ),
+                    Parameter(
+                        "Lock Type",
+                        response.lockType.default,
+                        response.lockType.default,
+                        response.lockType
+                    ),
+                    Parameter(
+                        "Lock Release",
+                        response.lockRelease.default,
+                        response.lockRelease.default,
+                        response.lockRelease
+                    )
                 )
                 parameterLiveData.postValue(dataList)
 

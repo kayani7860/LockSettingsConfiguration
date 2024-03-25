@@ -10,6 +10,8 @@
     <string name="primary">Primary</string>
     <string name="secondary">Secondary</string>
     <string name="defaultValue">Default value : %1$s</string>
-
-
+    <string name="lockVoltage">Lock Voltage</string>
+    <string name="lock">Lock</string>
+    <string name="withLock">With Lock</string>
+    <string name="no_network_available">No Network available</string>
 </resources>

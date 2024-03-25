@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.test.locksettingsconfiguration.databinding.FragmentParameterBinding
+import com.test.locksettingsconfiguration.isNetworkAvailable
 import com.test.locksettingsconfiguration.viewModels.ParameterViewModel
 
 class ParameterFragment : Fragment() {
@@ -42,11 +43,15 @@ class ParameterFragment : Fragment() {
             val action = ParameterFragmentDirections.actionFirstFragmentToSecondFragment(model)
             findNavController().navigate(action)
         }
+        if (!isNetworkAvailable){
+            binding.tvNoNetwork.visibility = View.VISIBLE
+            binding.loadingProgressBar.visibility = View.GONE
+        }
 
         listView.adapter = parameterAdapter
         mainViewModel.parameters.observe(viewLifecycleOwner) { parameterList ->
-
-            if (!parameterList.isNullOrEmpty()) {
+             if (!parameterList.isNullOrEmpty() ) {
+                binding.tvNoNetwork.visibility = View.GONE
                 binding.loadingProgressBar.visibility = View.GONE
                 binding.clMain.visibility = View.VISIBLE
                 parameterAdapter.originalList = parameterList

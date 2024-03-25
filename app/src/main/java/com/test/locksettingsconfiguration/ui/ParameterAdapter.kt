@@ -18,25 +18,17 @@ class ParameterAdapter(
 ) :
     ListAdapter<Parameter, ParameterAdapter.ViewHolder>(DataModelDiffCallback()) {
 
-    var originalList: List<Parameter> = ArrayList()
+    class DataModelDiffCallback : DiffUtil.ItemCallback<Parameter>() {
+        override fun areItemsTheSame(oldItem: Parameter, newItem: Parameter): Boolean {
+            return oldItem.parameterName == newItem.parameterName
+        }
 
-    init {
-        originalList = ArrayList()
-    }
-
-    fun filter(query: String?) {
-        val filteredList = ArrayList<Parameter>()
-        if (!query.isNullOrEmpty()) {
-            for (item in originalList) {
-                if (item.parameterName?.contains(query, ignoreCase = true) == true) {
-                    filteredList.add(item)
-                }
-            }
-            submitList(filteredList)
-        } else {
-            submitList(originalList)
+        override fun areContentsTheSame(oldItem: Parameter, newItem: Parameter): Boolean {
+            return oldItem == newItem
         }
     }
+
+    var originalList: List<Parameter> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(context).inflate(R.layout.parameter_item, parent, false)
@@ -46,29 +38,37 @@ class ParameterAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
         holder.parameterName.text = item.parameterName
-        holder.primaryValue.text = item.dataModel.default
-        holder.secondaryValue.text = item.dataModel.default
+        holder.primaryValue.text = item.primaryValue
+        holder.secondaryValue.text = item.secondaryValue
         holder.parameterItem.setOnClickListener {
             callback.invoke(item)
         }
 
     }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    fun filter(query: String?) {
+        val filteredList = ArrayList<Parameter>()
+        if (!query.isNullOrEmpty()) {
+            for (item in originalList) {
+                if (item.parameterName?.contains(query, ignoreCase = true) == true ||
+                    item.primaryValue?.contains(query, ignoreCase = true) == true ||
+                    item.secondaryValue?.contains(query, ignoreCase = true) == true
+                ) {
+                    filteredList.add(item)
+                }
+            }
+            submitList(filteredList)
+        } else {
+            submitList(originalList)
+        }
+    }
+
+
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val parameterName: TextView = itemView.findViewById(R.id.tv_parameter_name)
         var primaryValue: TextView = itemView.findViewById(R.id.tv_primary_value)
         var secondaryValue: TextView = itemView.findViewById(R.id.tv_secondary_value)
         var parameterItem: LinearLayout = itemView.findViewById(R.id.parameter_item_view)
-    }
-
-    class DataModelDiffCallback : DiffUtil.ItemCallback<Parameter>() {
-        override fun areItemsTheSame(oldItem: Parameter, newItem: Parameter): Boolean {
-            return oldItem.parameterName == newItem.parameterName
-        }
-
-        override fun areContentsTheSame(oldItem: Parameter, newItem: Parameter): Boolean {
-            return oldItem == newItem
-        }
     }
 }
 
